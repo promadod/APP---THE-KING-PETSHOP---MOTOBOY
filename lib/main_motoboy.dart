@@ -1,51 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'motoboy_screen.dart';
-import 'client_app/vitrine_screen.dart';
-import 'client_app/smart_image_service.dart'; 
+import 'motoboy_screen.dart'; // Certifique-se que este arquivo existe na pasta lib
+import 'client_app/smart_image_service.dart';
 import 'config.dart';
 
 void main() async {
-  
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Carrega o "Dicionário" de imagens
+  // Carregamos o dicionário também no app do motoboy, caso precise ver fotos
   await SmartImageService.carregarDicionario();
 
-  runApp(const MagnoApp());
+  runApp(const MagnoAppMotoboy());
 }
 
-class MagnoApp extends StatelessWidget {
-  const MagnoApp({super.key});
-
-  // ---  WHITE LABEL ---
-  static const String tipoApp = String.fromEnvironment('TIPO_APP', defaultValue: 'CLIENTE');
+class MagnoAppMotoboy extends StatelessWidget {
+  const MagnoAppMotoboy({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: Config.nomeLoja,
+      title: 'Área do Entregador', // Nome diferente para identificar
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: const Color(0xFF1E1E1E),
-        primaryColor: const Color(0xFF15A0A5),
+        // Mudei levemente a cor primária para azul para diferenciar visualmente do cliente
+        primaryColor: const Color(0xFF2196F3),
         colorScheme: const ColorScheme.dark(
-          primary: Color(0xFF15A0A5),
-          secondary: Color(0xFF15A0A5),
+          primary: Color(0xFF2196F3),
+          secondary: Color(0xFF2196F3),
         ),
       ),
-      
-      home: tipoApp == 'MOTOBOY' 
-          ? const LoginPage() 
-          : const VitrineScreen(),
+      // AQUI É A MUDANÇA: Vai direto para o Login
+      home: const LoginPage(),
     );
   }
 }
 
-
-// TELA DE LOGIN (Usada apenas para Motoboy/Admin)
-
+// --- TELA DE LOGIN (Movida para cá) ---
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -87,10 +79,14 @@ class _LoginPageState extends State<LoginPage> {
 
         if (data['is_superuser'] == true) {
           ScaffoldMessenger.of(context).showSnackBar(
-             const SnackBar(content: Text('Acesso Admin Mobile não configurado nesta versão.'))
+            const SnackBar(
+              content: Text(
+                'Acesso Admin Mobile não configurado nesta versão.',
+              ),
+            ),
           );
         } else {
-          // Login Motoboy
+          // SUCESSO: Vai para a tela do Motoboy
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -108,7 +104,10 @@ class _LoginPageState extends State<LoginPage> {
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro: $e'), backgroundColor: Colors.orange),
+        SnackBar(
+          content: Text('Erro de Conexão: $e'),
+          backgroundColor: Colors.orange,
+        ),
       );
     } finally {
       if (mounted) {
@@ -136,11 +135,19 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               const SizedBox(height: 30),
+              const Text(
+                "ÁREA DO ENTREGADOR",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  letterSpacing: 1.5,
+                ),
+              ),
               const SizedBox(height: 40),
               TextField(
                 controller: _userController,
                 decoration: const InputDecoration(
-                  labelText: 'Usuário',
+                  labelText: 'Usuário (CPF)',
                   prefixIcon: Icon(Icons.person),
                   border: OutlineInputBorder(),
                 ),
@@ -161,7 +168,7 @@ class _LoginPageState extends State<LoginPage> {
                 height: 50,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF15A0A5),
+                    backgroundColor: const Color(0xFF2196F3), // Azul Motoboy
                   ),
                   onPressed: _isLoading ? null : _fazerLogin,
                   child: _isLoading
