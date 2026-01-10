@@ -41318,7 +41318,7 @@ s=1
 break}n.a9(new A.alQ(n,j))
 p=5
 s=8
-return A.Q(A.arf(A.eO("https://preapdev.pythonanywhere.com/cliente/pedidos/?telefone="+j+"&loja_id=1")),$async$tC)
+return A.Q(A.arf(A.eO("https://preapdev.pythonanywhere.com/api/cliente/pedidos/?telefone="+j+"&loja_id=1")),$async$tC)
 case 8:m=b
 if(m.b===200)n.a9(new A.alR(n,m))
 p=2
