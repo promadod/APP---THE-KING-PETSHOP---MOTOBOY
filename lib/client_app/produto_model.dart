@@ -18,10 +18,16 @@ class Produto {
   factory Produto.fromJson(Map<String, dynamic> json) {
     String? urlFinal;
     
-    // Troca a porta bloqueada pela porta VIP
     if (json['imagem'] != null) {
-      String urlCorrigida = json['imagem'].toString().replaceFirst('/media/', '/media_api/');
-      urlFinal = "${Config.baseUrl}$urlCorrigida";
+      String imgString = json['imagem'].toString();
+      // O Pulo do Gato: 
+      // Se a imagem já vier do Cloudinary (começa com http), o app usa ela direto.
+      // Se for uma foto velha perdida, ele tenta montar o link base.
+      if (imgString.startsWith('http')) {
+        urlFinal = imgString;
+      } else {
+        urlFinal = "${Config.baseUrl}$imgString";
+      }
     }
 
     return Produto(
