@@ -16,13 +16,20 @@ class Produto {
   });
 
   factory Produto.fromJson(Map<String, dynamic> json) {
+    String? urlFinal;
+    
+    // Se o Django mandar uma foto, nós trocamos a porta bloqueada pela porta VIP
+    if (json['imagem'] != null) {
+      String urlCorrigida = json['imagem'].toString().replaceFirst('/media/', '/media_api/');
+      urlFinal = "${Config.baseUrl}$urlCorrigida";
+    }
+
     return Produto(
       id: json['id'],
       nome: json['nome_venda'], 
       preco: double.parse(json['preco_venda'].toString()),
       estoque: json['estoque_atual'] ?? 0,
-      // Se o Django mandar a imagem, ele junta com o IP do servidor. Se não, fica nulo.
-      imagemUrl: json['imagem'] != null ? "${Config.baseUrl}${json['imagem']}" : null,
+      imagemUrl: urlFinal,
     );
   }
 
